@@ -29,6 +29,9 @@ public class RescueTeam {
 	
 	@Column
 	private Boolean availability;
+	
+	@Column(name = "victim_id")
+	private Integer victimId;
 
 	public Integer getId() {
 		return id;
@@ -76,6 +79,14 @@ public class RescueTeam {
 
 	public void setAvailability(Boolean availability) {
 		this.availability = availability;
+	}
+	
+	public Integer getVictimId() {
+		return victimId;
+	}
+
+	public void setVictimId(Integer victimId) {
+		this.victimId = victimId;
 	}
 
 }

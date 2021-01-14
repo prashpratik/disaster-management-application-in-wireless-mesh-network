@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,11 @@ public class DisasterManagementTeamController {
 	@GetMapping("/dmt")
 	public List<DisasterManagementTeam> getAll() {
 		return dmtRepository.findAll();
+	}
+	
+	@GetMapping("/dmtById/{id}")
+	public DisasterManagementTeam getById(@PathVariable int id) {
+		return dmtRepository.findById(id).orElse(null);
 	}
 	
 	@PostMapping("/dmt")

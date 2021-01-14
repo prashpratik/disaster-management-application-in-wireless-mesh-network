@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,19 +26,29 @@ public class VictimController {
 		return victimRepository.findAll();
 	}
 	
+	@GetMapping("/victimById/{id}")
+	public Victim getById(@PathVariable int id) {
+		return victimRepository.findById(id).orElse(null);
+	}
+	
+	@GetMapping("/unassignedVictim")
+	public List<Victim> getUnassignedVictim() {
+		return victimRepository.findByRescueTeamId(null);
+	}
+	
 	@PostMapping("/victim")
 	public Victim add(@RequestBody Victim victimObj) {
 		return victimRepository.save(victimObj);
 	}
 	
-	@PutMapping("/addrescueteam")
-	public Victim addRescueTeam(@RequestBody Victim victimObj) {
+	@PutMapping("/assignRescueTeam")
+	public Victim assignRescueTeam(@RequestBody Victim victimObj) {
 	    Victim newVictimObj = victimRepository.findById(victimObj.getId()).orElse(null);
 	    newVictimObj.setRescueTeamId(victimObj.getRescueTeamId());
 		return victimRepository.save(newVictimObj);
 	}
 	
-	@PutMapping("/updatecomplete")
+	@PutMapping("/updateComplete")
 	public Victim updateComplete(@RequestBody Victim victimObj) {
 	    Victim newVictimObj = victimRepository.findById(victimObj.getId()).orElse(null);
 	    newVictimObj.setComplete(victimObj.getComplete());
