@@ -2,8 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <script src="js/jquery-3.5.1.min.js"></script>
-    <script src="js/index.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/js/index.js"></script>
   </head>
   <body>
     <p>Victim Register</p>
@@ -42,13 +44,13 @@
       <input id="rpwd" type="text" placeholder="Password" /><br />
       <input id="loc" type="text" placeholder="Location" /><br />
       <p>Role:</p>
-      <input type="radio" name="role" id="dmt" value="dmt" />
+      <input type="radio" name="role" id="dmt" value="DMT" />
       <label for="dmt">Disaster Management Team</label>
-      <input type="radio" name="role" id="military" value="military" />
+      <input type="radio" name="role" id="military" value="Military" />
       <label for="military">Military</label>
-      <input type="radio" name="role" id="ambulance" value="ambulance" />
+      <input type="radio" name="role" id="ambulance" value="Ambulance" />
       <label for="ambulance">Ambulance</label>
-      <input type="radio" name="role" id="volunteer" value="volunteer" />
+      <input type="radio" name="role" id="volunteer" value="Volunteer" />
       <label for="volunteer">Volunteer</label><br />
       <button onclick="register()">Register</button>
       <p id="rid"></p>

@@ -10,6 +10,6 @@ import com.wmn.disastermanagement.model.RescueTeam;
 @Repository
 public interface IRescueTeamRepository extends JpaRepository<RescueTeam, Integer>{
 
-	List<RescueTeam> findByAvailability(boolean availability);
+	List<RescueTeam> findByAvailability(String string);
 
 }

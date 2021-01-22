@@ -3,46 +3,31 @@ $(document).ready(function () {
   var id = urlParams.get("id");
   $.ajax({
     type: "GET",
-    url: "/api/rescueTeamById/" + id,
+    url: "/api/rescueTeamWithVictim/" + id,
     contentType: "application/json",
     dataType: "json",
     success: function (jsonData) {
-      $("#rp1").text("Rescue Team ID : R" + jsonData.id);
-      $("#rp2").text("Name : " + jsonData.name);
-      $("#rp3").text("Location : " + jsonData.location);
-      $("#rp4").text("Role : " + jsonData.role);
-      if (jsonData.availability == true) {
-        $("#rp5").text("Available : Yes");
-      } else if (jsonData.availability == false) {
-        $("#rp5").text("Available : No");
-      } else {
-        $("#rp5").text("Available : " + jsonData.availability);
-      }
-      var vid = jsonData.victimId;
-      if (vid != null) {
-        $.ajax({
-          type: "GET",
-          url: "/api/victimById/" + vid,
-          contentType: "application/json",
-          dataType: "json",
-          success: function (jsonData) {
-            $("#vp1").text("Victim ID : " + jsonData.id);
-            $("#vp2").text("Name : " + jsonData.name);
-            $("#vp3").text("Location : " + jsonData.location);
-            $("#vp4").text("Message : " + jsonData.message);
-            $("#vp5").text("Severity : " + jsonData.severity);
-            if (jsonData.complete == false) {
-              $("#vp6").text("Status : Active");
-            } else if (jsonData.complete == true) {
-              $("#vp6").text("Status : Closed");
-            } else {
-              $("#vp6").text("Status : " + jsonData.availability);
-            }
-          },
-          error: function (xhr) {
-            alert("Server Error\nReason: " + xhr.responseText);
-          },
-        });
+      $("#rp1").text("Rescue Team ID : R" + jsonData.rescueTeam.id);
+      $("#rp2").text("Name : " + jsonData.rescueTeam.name);
+      $("#rp3").text("Location : " + jsonData.rescueTeam.location);
+      $("#rp4").text("Role : " + jsonData.rescueTeam.role);
+      $("#rp5").text("Available : " + jsonData.rescueTeam.availability);
+      if (jsonData.victim != null) {
+        var vpar =
+          "<p>Victim ID : " +
+          jsonData.victim.id +
+          "</p><p>Name : " +
+          jsonData.victim.name +
+          "</p><p>Location : " +
+          jsonData.victim.location +
+          "</p><p>Message : " +
+          jsonData.victim.message +
+          "</p><p>Severity : " +
+          jsonData.victim.severity +
+          "</p><p>Status : " +
+          jsonData.victim.status +
+          "</p>";
+        $("#vdiv").html(vpar);
       } else {
         $("#vdiv").html("<p>Victim not yet assigned.</p>");
       }
@@ -51,50 +36,74 @@ $(document).ready(function () {
       alert("Server Error\nReason: " + xhr.responseText);
     },
   });
+  connect();
 });
 
-function completed() {
+function setCompleted() {
   const urlParams = new URLSearchParams(window.location.search);
-  var rid = urlParams.get("id");
-  $.ajax({
-    type: "GET",
-    url: "/api/rescueTeamById/" + rid,
-    contentType: "application/json",
-    dataType: "json",
-    success: function (jsonData) {
-      var vid = jsonData.victimId;
-      var updateVictimData = '{"id":"' + vid + '","complete":true}';
-      $.ajax({
-        type: "PUT",
-        url: "/api/updateComplete",
-        contentType: "application/json",
-        dataType: "json",
-        data: updateVictimData,
-        success: function (jsonData) {
-          console.log("Success");
-        },
-        error: function (xhr) {
-          alert("Server Error\nReason: " + xhr.responseText);
-        },
-      });
-    },
-    error: function (xhr) {
-      alert("Server Error\nReason: " + xhr.responseText);
-    },
-  });
-  var updateRescueTeamData =
-    '{"id":"' + rid + '","availability": true,"victim_id":null}';
+  var id = urlParams.get("id");
+  var setCompletedData = '{"id":"' + id + '"}';
   $.ajax({
     type: "PUT",
-    url: "/api/updateAvailability",
+    url: "/api/setComplete",
     contentType: "application/json",
     dataType: "json",
-    data: updateRescueTeamData,
-    success: function (jsonData) {
+    data: setCompletedData,
+    success: function (vid) {
       console.log("Success");
+      getAllData(vid);
     },
     error: function (xhr) {
       alert("Server Error\nReason: " + xhr.responseText);
     },
   });
+}
+
+var stompClient = null;
+
+function connect() {
+  const urlParams = new URLSearchParams(window.location.search);
+  var id = urlParams.get("id");
+  var socket = new SockJS("/web-socket");
+  stompClient = Stomp.over(socket);
+  stompClient.connect({}, function (frame) {
+    console.log("Connected: " + frame);
+    stompClient.subscribe("/topic/rescueTeamWithVictim/" + id, function (data) {
+      var jsonData = JSON.parse(data.body);
+      $("#rp1").text("Rescue Team ID : R" + jsonData.rescueTeam.id);
+      $("#rp2").text("Name : " + jsonData.rescueTeam.name);
+      $("#rp3").text("Location : " + jsonData.rescueTeam.location);
+      $("#rp4").text("Role : " + jsonData.rescueTeam.role);
+      $("#rp5").text("Available : " + jsonData.rescueTeam.availability);
+      if (jsonData.victim != null) {
+        var vpar =
+          "<p>Victim ID : " +
+          jsonData.victim.id +
+          "</p><p>Name : " +
+          jsonData.victim.name +
+          "</p><p>Location : " +
+          jsonData.victim.location +
+          "</p><p>Message : " +
+          jsonData.victim.message +
+          "</p><p>Severity : " +
+          jsonData.victim.severity +
+          "</p><p>Status : " +
+          jsonData.victim.status +
+          "</p>";
+        $("#vdiv").html(vpar);
+      } else {
+        $("#vdiv").html("<p>Victim not yet assigned.</p>");
+      }
+    });
+  });
+}
+
+function getAllData(vid) {
+  const urlParams = new URLSearchParams(window.location.search);
+  var id = urlParams.get("id");
+  stompClient.send("/app/victim");
+  stompClient.send("/app/rescueTeam");
+  stompClient.send("/app/getAssignment");
+  stompClient.send("/app/rescueTeamWithVictim/" + id);
+  stompClient.send("/app/victimWithRescueTeam/" + vid);
 }

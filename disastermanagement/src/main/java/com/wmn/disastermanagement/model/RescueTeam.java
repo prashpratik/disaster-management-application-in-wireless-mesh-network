@@ -28,7 +28,7 @@ public class RescueTeam {
 	private String location;
 	
 	@Column
-	private Boolean availability;
+	private String availability;
 	
 	@Column(name = "victim_id")
 	private Integer victimId;
@@ -73,14 +73,14 @@ public class RescueTeam {
 		this.location = location;
 	}
 
-	public Boolean getAvailability() {
+	public String getAvailability() {
 		return availability;
 	}
 
-	public void setAvailability(Boolean availability) {
+	public void setAvailability(String availability) {
 		this.availability = availability;
 	}
-	
+
 	public Integer getVictimId() {
 		return victimId;
 	}

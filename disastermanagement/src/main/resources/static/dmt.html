@@ -2,8 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <script src="js/jquery-3.5.1.min.js"></script>
-    <script src="js/dmt.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/js/dmt.js"></script>
     <style>
       table,
       th,
@@ -35,7 +37,7 @@
       <select id="vid"></select>
       <label for="rid">Select Rescue Team ID :</label>
       <select id="rid"></select>
-      <button onclick="assignment()">Assign</button>
+      <button onclick="setAssignment()">Assign</button>
     </div>
   </body>
 </html>

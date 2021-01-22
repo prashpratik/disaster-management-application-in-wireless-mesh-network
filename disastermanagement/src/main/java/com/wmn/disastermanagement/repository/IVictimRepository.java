@@ -10,6 +10,6 @@ import com.wmn.disastermanagement.model.Victim;
 @Repository
 public interface IVictimRepository extends JpaRepository<Victim, Integer>{
 
-	List<Victim> findByRescueTeamId(Integer rescueTeamId);
+	List<Victim> findByStatus(String string);
 
 }

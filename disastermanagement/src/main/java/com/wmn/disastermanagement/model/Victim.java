@@ -28,7 +28,7 @@ public class Victim {
 	private String message;
 	
 	@Column
-	private Boolean complete;
+	private String status;
 
 	@Column(name = "rescue_team_id")
 	private Integer rescueTeamId;
@@ -73,12 +73,12 @@ public class Victim {
 		this.message = message;
 	}
 	
-	public Boolean getComplete() {
-		return complete;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setComplete(Boolean complete) {
-		this.complete = complete;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	public Integer getRescueTeamId() {

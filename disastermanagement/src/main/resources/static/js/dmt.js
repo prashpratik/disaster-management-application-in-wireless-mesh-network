@@ -26,11 +26,7 @@ $(document).ready(function () {
       $.each(jsonData, function () {
         var tbl_row = "";
         $.each(this, function (k, v) {
-          if (k == "complete" && v == false) {
-            tbl_row += "<td>Active</td>";
-          } else if (k == "complete" && v == true) {
-            tbl_row += "<td>Closed</td>";
-          } else if (k == "rescueTeamId" && v == null) {
+          if (k == "rescueTeamId" && v == null) {
             tbl_row += "<td>Not Assigned</td>";
           } else if (k == "rescueTeamId" && v != null) {
             tbl_row += "<td>R" + v + "</td>";
@@ -62,10 +58,6 @@ $(document).ready(function () {
             tbl_row += "<td>R" + v + "</td>";
           } else if (k == "password") {
             tbl_row += "";
-          } else if (k == "availability" && v == true) {
-            tbl_row += "<td>Yes</td>";
-          } else if (k == "availability" && v == false) {
-            tbl_row += "<td>No</td>";
           } else if (k == "victimId" && v == null) {
             tbl_row += "<td>Not Assigned</td>";
           } else {
@@ -82,87 +74,148 @@ $(document).ready(function () {
   });
   $.ajax({
     type: "GET",
-    url: "/api/unassignedVictim",
+    url: "/api/getAssignment",
     contentType: "application/json",
     dataType: "json",
     success: function (jsonData) {
-      var sel_row = "<option>Please Select</option>";
-      $.each(jsonData, function () {
+      var vsel_row = "<option>Please Select</option>";
+      $.each(jsonData.victim, function () {
         $.each(this, function (k, v) {
           if (k == "id") {
-            sel_row += "<option>" + v + "</option>";
+            vsel_row += "<option>" + v + "</option>";
           } else {
-            sel_row += "";
+            vsel_row += "";
           }
         });
       });
-      $("#vid").html(sel_row);
+      $("#vid").html(vsel_row);
+      var rsel_row = "<option>Please Select</option>";
+      $.each(jsonData.rescueTeam, function () {
+        $.each(this, function (k, v) {
+          if (k == "id") {
+            rsel_row += "<option>R" + v + "</option>";
+          } else {
+            rsel_row += "";
+          }
+        });
+      });
+      $("#rid").html(rsel_row);
     },
     error: function (xhr) {
       alert("Server Error\nReason: " + xhr.responseText);
     },
   });
-  $.ajax({
-    type: "GET",
-    url: "/api/availableRescueTeam",
-    contentType: "application/json",
-    dataType: "json",
-    success: function (jsonData) {
-      var sel_row = "<option>Please Select</option>";
-      $.each(jsonData, function () {
-        $.each(this, function (k, v) {
-          if (k == "id") {
-            sel_row += "<option>R" + v + "</option>";
-          } else {
-            sel_row += "";
-          }
-        });
-      });
-      $("#rid").html(sel_row);
-    },
-    error: function (xhr) {
-      alert("Server Error\nReason: " + xhr.responseText);
-    },
-  });
+  connect();
 });
 
-function assignment() {
-  var updateVictimData =
-    '{"id":"' +
+function setAssignment() {
+  var setAssignmentData =
+    '{"victim":"' +
     $("#vid option:selected").text() +
-    '","rescueTeamId":"' +
+    '","rescueTeam":"' +
     $("#rid option:selected").text().substring(1) +
     '"}';
-  var updateRescueTeamData =
-    '{"id":"' +
-    $("#rid option:selected").text().substring(1) +
-    '","victimId":"' +
-    $("#vid option:selected").text() +
-    '","availability": false}';
   $.ajax({
     type: "PUT",
-    url: "/api/assignRescueTeam",
+    url: "/api/setAssignment",
     contentType: "application/json",
     dataType: "json",
-    data: updateVictimData,
-    success: function (jsonData) {
+    data: setAssignmentData,
+    success: function () {
       console.log("Success");
+      getAllData();
     },
     error: function (xhr) {
       alert("Server Error\nReason: " + xhr.responseText);
     },
   });
-  $.ajax({
-    type: "PUT",
-    url: "/api/assignVictim",
-    contentType: "application/json",
-    dataType: "json",
-    data: updateRescueTeamData,
-    success: function (jsonData) {
-      console.log("Success");
-    },
-    error: function (xhr) {
-      alert("Server Error\nReason: " + xhr.responseText);
-    },
+}
+
+var stompClient = null;
+
+function connect() {
+  var socket = new SockJS("/web-socket");
+  stompClient = Stomp.over(socket);
+  stompClient.connect({}, function (frame) {
+    console.log("Connected: " + frame);
+    stompClient.subscribe("/topic/victim", function (data) {
+      var jsonData = JSON.parse(data.body);
+      var tbl_body =
+        "<tr><td>Victim ID</td><td>Name</td><td>Location</td><td>Severity</td>" +
+        "<td>Message</td><td>Status</td><td>Assigned Rescue Team ID</td></tr>";
+      $.each(jsonData, function () {
+        var tbl_row = "";
+        $.each(this, function (k, v) {
+          if (k == "rescueTeamId" && v == null) {
+            tbl_row += "<td>Not Assigned</td>";
+          } else if (k == "rescueTeamId" && v != null) {
+            tbl_row += "<td>R" + v + "</td>";
+          } else {
+            tbl_row += "<td>" + v + "</td>";
+          }
+        });
+        tbl_body += "<tr>" + tbl_row + "</tr>";
+      });
+      $("#vicTable").html(tbl_body);
+    });
+    stompClient.subscribe("/topic/rescueTeam", function (data) {
+      var jsonData = JSON.parse(data.body);
+      var tbl_body =
+        "<tr><td>Rescue Team ID</td><td>Name</td><td>Role</td>" +
+        "<td>Location</td><td>Available</td><td>Assigned Victim ID</td></tr>";
+      $.each(jsonData, function () {
+        var tbl_row = "";
+        $.each(this, function (k, v) {
+          if (k == "id") {
+            tbl_row += "<td>R" + v + "</td>";
+          } else if (k == "password") {
+            tbl_row += "";
+          } else if (k == "victimId" && v == null) {
+            tbl_row += "<td>Not Assigned</td>";
+          } else {
+            tbl_row += "<td>" + v + "</td>";
+          }
+        });
+        tbl_body += "<tr>" + tbl_row + "</tr>";
+      });
+      $("#resTable").html(tbl_body);
+    });
+    stompClient.subscribe("/topic/getAssignment", function (data) {
+      var jsonData = JSON.parse(data.body);
+      var vsel_row = "<option>Please Select</option>";
+      $.each(jsonData.victim, function () {
+        $.each(this, function (k, v) {
+          if (k == "id") {
+            vsel_row += "<option>" + v + "</option>";
+          } else {
+            vsel_row += "";
+          }
+        });
+      });
+      $("#vid").html(vsel_row);
+      var rsel_row = "<option>Please Select</option>";
+      $.each(jsonData.rescueTeam, function () {
+        $.each(this, function (k, v) {
+          if (k == "id") {
+            rsel_row += "<option>R" + v + "</option>";
+          } else {
+            rsel_row += "";
+          }
+        });
+      });
+      $("#rid").html(rsel_row);
+    });
   });
+}
+
+function getAllData() {
+  stompClient.send("/app/victim");
+  stompClient.send("/app/rescueTeam");
+  stompClient.send("/app/getAssignment");
+  stompClient.send(
+    "/app/victimWithRescueTeam/" + $("#vid option:selected").text()
+  );
+  stompClient.send(
+    "/app/rescueTeamWithVictim/" + $("#rid option:selected").text().substring(1)
+  );
 }

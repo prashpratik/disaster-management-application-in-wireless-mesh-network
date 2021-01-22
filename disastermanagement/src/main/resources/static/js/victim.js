@@ -3,39 +3,28 @@ $(document).ready(function () {
   var id = urlParams.get("id");
   $.ajax({
     type: "GET",
-    url: "/api/victimById/" + id,
+    url: "/api/victimWithRescueTeam/" + id,
     contentType: "application/json",
     dataType: "json",
     success: function (jsonData) {
-      $("#vp1").text("Victim ID : " + jsonData.id);
-      $("#vp2").text("Name : " + jsonData.name);
-      $("#vp3").text("Location : " + jsonData.location);
-      $("#vp4").text("Message : " + jsonData.message);
-      $("#vp5").text("Severity : " + jsonData.severity);
-      if (jsonData.complete == false) {
-        $("#vp6").text("Status : Active");
-      } else if (jsonData.complete == true) {
-        $("#vp6").text("Status : Closed");
-      } else {
-        $("#vp6").text("Status : " + jsonData.availability);
-      }
-      var rid = jsonData.rescueTeamId;
-      if (rid != null) {
-        $.ajax({
-          type: "GET",
-          url: "/api/rescueTeamById/" + rid,
-          contentType: "application/json",
-          dataType: "json",
-          success: function (jsonData) {
-            $("#rp1").text("Rescue Team ID : R" + jsonData.id);
-            $("#rp2").text("Name : " + jsonData.name);
-            $("#rp3").text("Location : " + jsonData.location);
-            $("#rp4").text("Role : " + jsonData.role);
-          },
-          error: function (xhr) {
-            alert("Server Error\nReason: " + xhr.responseText);
-          },
-        });
+      $("#vp1").text("Victim ID : " + jsonData.victim.id);
+      $("#vp2").text("Name : " + jsonData.victim.name);
+      $("#vp3").text("Location : " + jsonData.victim.location);
+      $("#vp4").text("Message : " + jsonData.victim.message);
+      $("#vp5").text("Severity : " + jsonData.victim.severity);
+      $("#vp6").text("Status : " + jsonData.victim.status);
+      if (jsonData.rescueTeam != null) {
+        var rpar =
+          "<p>Rescue Team ID : R" +
+          jsonData.rescueTeam.id +
+          "</p><p>Name : " +
+          jsonData.rescueTeam.name +
+          "</p><p>Location : " +
+          jsonData.rescueTeam.location +
+          "</p><p>Role : " +
+          jsonData.rescueTeam.role +
+          "</p>";
+        $("#rdiv").html(rpar);
       } else {
         $("#rdiv").html("<p>Rescue Team not yet assigned.</p>");
       }
@@ -44,4 +33,41 @@ $(document).ready(function () {
       alert("Server Error\nReason: " + xhr.responseText);
     },
   });
+  connect();
 });
+
+var stompClient = null;
+
+function connect() {
+  const urlParams = new URLSearchParams(window.location.search);
+  var id = urlParams.get("id");
+  var socket = new SockJS("/web-socket");
+  stompClient = Stomp.over(socket);
+  stompClient.connect({}, function (frame) {
+    console.log("Connected: " + frame);
+    stompClient.subscribe("/topic/victimWithRescueTeam/" + id, function (data) {
+      var jsonData = JSON.parse(data.body);
+      $("#vp1").text("Victim ID : " + jsonData.victim.id);
+      $("#vp2").text("Name : " + jsonData.victim.name);
+      $("#vp3").text("Location : " + jsonData.victim.location);
+      $("#vp4").text("Message : " + jsonData.victim.message);
+      $("#vp5").text("Severity : " + jsonData.victim.severity);
+      $("#vp6").text("Status : " + jsonData.victim.status);
+      if (jsonData.rescueTeam != null) {
+        var rpar =
+          "<p>Rescue Team ID : R" +
+          jsonData.rescueTeam.id +
+          "</p><p>Name : " +
+          jsonData.rescueTeam.name +
+          "</p><p>Location : " +
+          jsonData.rescueTeam.location +
+          "</p><p>Role : " +
+          jsonData.rescueTeam.role +
+          "</p>";
+        $("#rdiv").html(rpar);
+      } else {
+        $("#rdiv").html("<p>Rescue Team not yet assigned.</p>");
+      }
+    });
+  });
+}

@@ -1,3 +1,7 @@
+$(document).ready(function () {
+  connect();
+});
+
 function victimRegister() {
   var addData =
     '{"name":"' +
@@ -8,7 +12,7 @@ function victimRegister() {
     $("input[name='severity']:checked").val() +
     '","message":"' +
     $("#vmsg").val() +
-    '","complete":"false"}';
+    '","status":"Not Assigned"}';
   $.ajax({
     type: "POST",
     url: "/api/victim",
@@ -17,6 +21,8 @@ function victimRegister() {
     data: addData,
     success: function (jsonData) {
       console.log("Success");
+      stompClient.send("/app/victim");
+      stompClient.send("/app/getAssignment");
       window.location = "/victim.html?id=" + jsonData.id;
     },
     error: function (xhr) {
@@ -41,24 +47,31 @@ function victimLogin() {
 }
 
 function register() {
-  var addData =
-    '{"name":"' +
-    $("#rname").val() +
-    '","password":"' +
-    $("#rpwd").val() +
-    '","role":"' +
-    $("input[name='role']:checked").val() +
-    '","location":"' +
-    $("#loc").val() +
-    '","availability":"true"}';
+  var addData = "";
   var role = "";
   var roleid = "";
-  if ($("input[name='role']:checked").val() == "dmt") {
+  if ($("input[name='role']:checked").val() == "DMT") {
     role = "dmt";
     roleid = "D";
+    addData =
+      '{"name":"' +
+      $("#rname").val() +
+      '","password":"' +
+      $("#rpwd").val() +
+      '"}';
   } else {
     role = "rescueTeam";
     roleid = "R";
+    addData =
+      '{"name":"' +
+      $("#rname").val() +
+      '","password":"' +
+      $("#rpwd").val() +
+      '","role":"' +
+      $("input[name='role']:checked").val() +
+      '","location":"' +
+      $("#loc").val() +
+      '","availability":"Yes"}';
   }
   $.ajax({
     type: "POST",
@@ -69,6 +82,8 @@ function register() {
     success: function (jsonData) {
       console.log("Success");
       $("#rid").text("Your Login Id is " + roleid + jsonData.id);
+      stompClient.send("/app/rescueTeam");
+      stompClient.send("/app/getAssignment");
     },
     error: function (xhr) {
       alert("Server Error\nReason: " + xhr.responseText);
@@ -105,4 +120,12 @@ function login() {
       alert("Server Error\nReason: " + xhr.responseText);
     },
   });
+}
+
+var stompClient = null;
+
+function connect() {
+  var socket = new SockJS("/web-socket");
+  stompClient = Stomp.over(socket);
+  stompClient.connect();
 }
