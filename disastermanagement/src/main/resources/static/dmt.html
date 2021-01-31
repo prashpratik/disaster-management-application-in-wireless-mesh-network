@@ -39,5 +39,31 @@
       <select id="rid"></select>
       <button onclick="setAssignment()">Assign</button>
     </div>
+    <hr />
+    <p>Chat Section</p>
+    <div>
+      <input
+        type="radio"
+        name="type"
+        id="victim"
+        value="dv"
+        onclick="getChatVictim()"
+      />
+      <label for="victim">Victim</label>
+      <input
+        type="radio"
+        name="type"
+        id="rescueteam"
+        value="dr"
+        onclick="getChatRescueTeam()"
+      />
+      <label for="rescueteam">Rescue Team</label>
+      <br />
+      <label for="cid">Select ID :</label>
+      <select id="cid">
+        <option>Please Select</option>
+      </select>
+      <button onclick="chat()">Chat</button>
+    </div>
   </body>
 </html>

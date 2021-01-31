@@ -7,30 +7,7 @@ $(document).ready(function () {
     contentType: "application/json",
     dataType: "json",
     success: function (jsonData) {
-      $("#rp1").text("Rescue Team ID : R" + jsonData.rescueTeam.id);
-      $("#rp2").text("Name : " + jsonData.rescueTeam.name);
-      $("#rp3").text("Location : " + jsonData.rescueTeam.location);
-      $("#rp4").text("Role : " + jsonData.rescueTeam.role);
-      $("#rp5").text("Available : " + jsonData.rescueTeam.availability);
-      if (jsonData.victim != null) {
-        var vpar =
-          "<p>Victim ID : " +
-          jsonData.victim.id +
-          "</p><p>Name : " +
-          jsonData.victim.name +
-          "</p><p>Location : " +
-          jsonData.victim.location +
-          "</p><p>Message : " +
-          jsonData.victim.message +
-          "</p><p>Severity : " +
-          jsonData.victim.severity +
-          "</p><p>Status : " +
-          jsonData.victim.status +
-          "</p>";
-        $("#vdiv").html(vpar);
-      } else {
-        $("#vdiv").html("<p>Victim not yet assigned.</p>");
-      }
+      showRescueTeamWithVictimData(jsonData);
     },
     error: function (xhr) {
       alert("Server Error\nReason: " + xhr.responseText);
@@ -51,7 +28,7 @@ function setCompleted() {
     data: setCompletedData,
     success: function (vid) {
       console.log("Success");
-      getAllData(vid);
+      updateAllData(vid);
     },
     error: function (xhr) {
       alert("Server Error\nReason: " + xhr.responseText);
@@ -70,35 +47,44 @@ function connect() {
     console.log("Connected: " + frame);
     stompClient.subscribe("/topic/rescueTeamWithVictim/" + id, function (data) {
       var jsonData = JSON.parse(data.body);
-      $("#rp1").text("Rescue Team ID : R" + jsonData.rescueTeam.id);
-      $("#rp2").text("Name : " + jsonData.rescueTeam.name);
-      $("#rp3").text("Location : " + jsonData.rescueTeam.location);
-      $("#rp4").text("Role : " + jsonData.rescueTeam.role);
-      $("#rp5").text("Available : " + jsonData.rescueTeam.availability);
-      if (jsonData.victim != null) {
-        var vpar =
-          "<p>Victim ID : " +
-          jsonData.victim.id +
-          "</p><p>Name : " +
-          jsonData.victim.name +
-          "</p><p>Location : " +
-          jsonData.victim.location +
-          "</p><p>Message : " +
-          jsonData.victim.message +
-          "</p><p>Severity : " +
-          jsonData.victim.severity +
-          "</p><p>Status : " +
-          jsonData.victim.status +
-          "</p>";
-        $("#vdiv").html(vpar);
-      } else {
-        $("#vdiv").html("<p>Victim not yet assigned.</p>");
-      }
+      showRescueTeamWithVictimData(jsonData);
     });
   });
 }
 
-function getAllData(vid) {
+function showRescueTeamWithVictimData(jsonData) {
+  $("#rp1").text("Rescue Team ID : R" + jsonData.rescueTeam.id);
+  $("#rp2").text("Name : " + jsonData.rescueTeam.name);
+  $("#rp3").text("Location : " + jsonData.rescueTeam.location);
+  $("#rp4").text("Role : " + jsonData.rescueTeam.role);
+  $("#rp5").text("Available : " + jsonData.rescueTeam.availability);
+  if (jsonData.victim != null) {
+    var vpar =
+      "<p>Victim ID : " +
+      jsonData.victim.id +
+      "</p><p>Name : " +
+      jsonData.victim.name +
+      "</p><p>Location : " +
+      jsonData.victim.location +
+      "</p><p>Message : " +
+      jsonData.victim.message +
+      "</p><p>Severity : " +
+      jsonData.victim.severity +
+      "</p><p>Status : " +
+      jsonData.victim.status +
+      "</p>";
+    $("#vdiv").html(
+      vpar +
+        "<button onclick='chatvictim(" +
+        jsonData.victim.id +
+        ")'>Chat with Victim</button>"
+    );
+  } else {
+    $("#vdiv").html("<p>Victim not yet assigned.</p>");
+  }
+}
+
+function updateAllData(vid) {
   const urlParams = new URLSearchParams(window.location.search);
   var id = urlParams.get("id");
   stompClient.send("/app/victim");
@@ -106,4 +92,14 @@ function getAllData(vid) {
   stompClient.send("/app/getAssignment");
   stompClient.send("/app/rescueTeamWithVictim/" + id);
   stompClient.send("/app/victimWithRescueTeam/" + vid);
+}
+
+function chatdmt() {
+  const urlParams = new URLSearchParams(window.location.search);
+  var id = urlParams.get("id");
+  window.location = "/chatwindow.html?type=dr&id=" + id;
+}
+
+function chatvictim(vid) {
+  window.location = "/chatwindow.html?type=rv&id=" + vid;
 }
