@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/js/rescueteam.js"></script>
+  </head>
+  <body>
+    <p>Rescue Team Details</p>
+    <div>
+      <p id="rp1"></p>
+      <p id="rp2"></p>
+      <p id="rp3"></p>
+      <p id="rp4"></p>
+      <p id="rp5"></p>
+      <button onclick="chatdmt()">Chat with DMT</button>
+    </div>
+    <hr />
+    <p>Assigned Victim Details</p>
+    <div id="vdiv"></div>
+    <hr />
+    <button onclick="setCompleted()">Work Completed</button>
+  </body>
+</html>

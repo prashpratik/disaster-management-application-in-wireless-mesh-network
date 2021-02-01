@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/js/dmt.js"></script>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Disaster Management Team Details</p>
+    <div>
+      <p id="p1"></p>
+      <p id="p2"></p>
+    </div>
+    <hr />
+    <p>Victims Details</p>
+    <div>
+      <table id="vicTable"></table>
+    </div>
+    <hr />
+    <p>Rescue Team Details</p>
+    <div>
+      <table id="resTable"></table>
+    </div>
+    <hr />
+    <p>Assignment</p>
+    <div>
+      <label for="vid">Select Victim ID :</label>
+      <select id="vid"></select>
+      <label for="rid">Select Rescue Team ID :</label>
+      <select id="rid"></select>
+      <button onclick="setAssignment()">Assign</button>
+    </div>
+    <hr />
+    <p>Chat Section</p>
+    <div>
+      <input
+        type="radio"
+        name="type"
+        id="victim"
+        value="dv"
+        onclick="getChatVictim()"
+      />
+      <label for="victim">Victim</label>
+      <input
+        type="radio"
+        name="type"
+        id="rescueteam"
+        value="dr"
+        onclick="getChatRescueTeam()"
+      />
+      <label for="rescueteam">Rescue Team</label>
+      <br />
+      <label for="cid">Select ID :</label>
+      <select id="cid">
+        <option>Please Select</option>
+      </select>
+      <button onclick="chat()">Chat</button>
+    </div>
+  </body>
+</html>

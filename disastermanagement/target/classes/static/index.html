@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/js/index.js"></script>
+  </head>
+  <body>
+    <p>Victim Register</p>
+    <div>
+      <input id="vname" type="text" placeholder="Full Name" /><br />
+      <input id="vloc" type="text" placeholder="Location" /><br />
+      <input id="vmsg" type="text" placeholder="Message" /><br />
+      <p>Severity:</p>
+      <input type="radio" name="severity" id="high" value="High" />
+      <label for="high">High</label>
+      <input type="radio" name="severity" id="medium" value="Medium" />
+      <label for="medium">Medium</label>
+      <input type="radio" name="severity" id="low" value="Low" />
+      <label for="low">Low</label><br />
+      <button onclick="victimRegister()">Contact Us</button>
+    </div>
+    <hr />
+    <p>Victim Login</p>
+    <div>
+      <input id="vid" type="text" placeholder="Give your ID number" /><br />
+      <button onclick="victimLogin()">Go</button>
+      <p id="vlfail"></p>
+    </div>
+    <hr />
+    <p>Login</p>
+    <div>
+      <input id="lid" type="text" placeholder="Login ID" /><br />
+      <input id="lpwd" type="text" placeholder="Password" /><br />
+      <button onclick="login()">Login</button>
+      <p id="lfail"></p>
+    </div>
+    <hr />
+    <p>Register</p>
+    <div>
+      <input id="rname" type="text" placeholder="Full Name" /><br />
+      <input id="rpwd" type="text" placeholder="Password" /><br />
+      <input id="loc" type="text" placeholder="Location" /><br />
+      <p>Role:</p>
+      <input type="radio" name="role" id="dmt" value="DMT" />
+      <label for="dmt">Disaster Management Team</label>
+      <input type="radio" name="role" id="military" value="Military" />
+      <label for="military">Military</label>
+      <input type="radio" name="role" id="ambulance" value="Ambulance" />
+      <label for="ambulance">Ambulance</label>
+      <input type="radio" name="role" id="volunteer" value="Volunteer" />
+      <label for="volunteer">Volunteer</label><br />
+      <button onclick="register()">Register</button>
+      <p id="rid"></p>
+    </div>
+  </body>
+</html>
