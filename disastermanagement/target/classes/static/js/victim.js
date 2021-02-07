@@ -61,11 +61,11 @@ function showVictimWithRescueTeamData(jsonData) {
 function chatdmt() {
   const urlParams = new URLSearchParams(window.location.search);
   var id = urlParams.get("id");
-  window.location = "/chatwindow.html?type=dv&id=" + id;
+  window.open("/chatwindow.html?user=Victim&type=dv&id=" + id);
 }
 
 function chatrescueteam() {
   const urlParams = new URLSearchParams(window.location.search);
   var id = urlParams.get("id");
-  window.location = "/chatwindow.html?type=rv&id=" + id;
+  window.open("/chatwindow.html?user=Victim&type=rv&id=" + id);
 }

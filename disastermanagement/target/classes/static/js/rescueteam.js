@@ -77,7 +77,7 @@ function showRescueTeamWithVictimData(jsonData) {
       vpar +
         "<button onclick='chatvictim(" +
         jsonData.victim.id +
-        ")'>Chat with Victim</button>"
+        ")'>Chat with Victim</button><br /><button onclick='setCompleted()'>Work Completed</button>"
     );
   } else {
     $("#vdiv").html("<p>Victim not yet assigned.</p>");
@@ -97,9 +97,9 @@ function updateAllData(vid) {
 function chatdmt() {
   const urlParams = new URLSearchParams(window.location.search);
   var id = urlParams.get("id");
-  window.location = "/chatwindow.html?type=dr&id=" + id;
+  window.open("/chatwindow.html?user=RescueTeam&type=dr&id=" + id);
 }
 
 function chatvictim(vid) {
-  window.location = "/chatwindow.html?type=rv&id=" + vid;
+  window.open("/chatwindow.html?user=RescueTeam&type=rv&id=" + vid);
 }

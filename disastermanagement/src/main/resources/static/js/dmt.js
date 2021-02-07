@@ -241,11 +241,13 @@ function showChatRescueTeam(jsonData) {
 
 function chat() {
   if ($("input[name='type']:checked").val() == "dv") {
-    window.location =
-      "/chatwindow.html?type=dv&id=" + $("#cid option:selected").text();
+    window.open(
+      "/chatwindow.html?user=DMT&type=dv&id=" + $("#cid option:selected").text()
+    );
   } else {
-    window.location =
-      "/chatwindow.html?type=dr&id=" +
-      $("#cid option:selected").text().substring(1);
+    window.open(
+      "/chatwindow.html?user=DMT&type=dr&id=" +
+        $("#cid option:selected").text().substring(1)
+    );
   }
 }

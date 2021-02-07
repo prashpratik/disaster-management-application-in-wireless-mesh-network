@@ -4,25 +4,27 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import com.wmn.disastermanagement.websocket.model.Chat;
+
 @Controller
-public class ChatController {
+public class ChatWebSocketController {
 	
 	@MessageMapping("/chat/dv/{id}")
 	@SendTo("/topic/chat/dv/{id}")
-	public String dvChat(String message) {
-		return message;
+	public Chat dvChat(Chat chat) {
+		return chat;
 	}
 	
 	@MessageMapping("/chat/dr/{id}")
 	@SendTo("/topic/chat/dr/{id}")
-	public String drChat(String message) {
-		return message;
+	public Chat drChat(Chat chat) {
+		return chat;
 	}
 	
 	@MessageMapping("/chat/rv/{id}")
 	@SendTo("/topic/chat/rv/{id}")
-	public String rvChat(String message) {
-		return message;
+	public Chat rvChat(Chat chat) {
+		return chat;
 	}
 
 }
